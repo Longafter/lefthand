@@ -1,0 +1,4 @@
+/lefthand-venv/
+*.pyc
+*.swp
+*.sqlite3
