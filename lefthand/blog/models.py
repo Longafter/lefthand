@@ -25,6 +25,22 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    # 获取所有分类，并区分是否为导航
+    def get_navs(cls):
+        categories = cls.objects.filter(status=cls.STATUS_NORMAL)
+        nav_categories = []
+        normal_categories = []
+        for cate in categories:
+            if cate.is_nav:
+                nav_categories.append(cate)
+            else:
+                normal_categories.append(cate)
+        return {
+            'navs': nav_categories,
+            'categories': normal_categories,
+        }
+
 
 class Tag(models.Model):
     STATUS_NORMAL = 1
@@ -68,6 +84,8 @@ class Post(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="作者")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="分类")
     tag = models.ManyToManyField(Tag, verbose_name="标签")
+    pv = models.PositiveIntegerField(default=1)
+    uv = models.PositiveIntegerField(default=1)
 
     class Meta:
         verbose_name = '文章'
@@ -76,3 +94,40 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    @staticmethod
+    # 通过 tag 获取文章
+    def get_by_tag(tag_pk):
+        try:
+            tag = Tag.objects.get(pk=tag_pk)
+        except Tag.DoesNotExist as e:
+            tag = None
+            post_list = []
+        else:
+            post_list = tag.post_set.filter(status=Post.STATUS_NORMAL) \
+                                    .select_related('owner', 'category')
+        return post_list, tag
+
+    @staticmethod
+    # 通过 category 获取文章
+    def get_by_category(category_pk):
+        try:
+            category = Category.objects.get(pk=category_pk)
+        except Category.DoesNotExist as e:
+            category = None
+            post_list = []
+        else:
+            post_list = category.post_set.filter(status=Post.STATUS_NORMAL) \
+                                .select_related('owner', 'category')
+        return post_list, category
+
+    @classmethod
+    # 获取最新文章
+    def latest_posts(cls):
+        queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
+        return queryset
+
+    @classmethod
+    # 获取最热文章
+    def hot_posts(cls):
+        queryset = cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
