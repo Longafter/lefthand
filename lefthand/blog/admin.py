@@ -13,7 +13,7 @@ from lefthand.custom_site import custom_site
 @admin.register(Category, site=custom_site)
 class CategoryAdmin(BaseOwnerAdmin):
     list_display = ('name', 'status', 'is_nav', 'created_time', 'post_count', 'owner')
-    fields = ('name', 'status', 'is_nav')
+    fields = ('name', 'status', 'is_nav', 'owner')
 
     # 显示分类下的文章数量
     def post_count(self, obj):
@@ -39,7 +39,7 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
 @admin.register(Tag, site=custom_site)
 class TagAdmin(BaseOwnerAdmin):
     list_display = ('name', 'status', 'created_time', 'owner')
-    fields = ('name', 'status')
+    fields = ('name', 'status', 'owner')
 
 
 @admin.register(Post, site=custom_site)
@@ -50,12 +50,11 @@ class PostAdmin(BaseOwnerAdmin):
         'title', 'category', 'status',
         'created_time', 'owner', 'operator',
     ]
-    exclude = ('owner', )
     fieldsets = (
         ('基础配置', {
             'fields': (
                 ('title', 'category'),
-                'status',
+                'status', 'owner',
                 'created_time',
             ),
         }),

@@ -16,7 +16,7 @@ class Category(models.Model):
         choices=STATUS_ITEMS, verbose_name="状态")
     is_nav = models.BooleanField(default=False, verbose_name="是否为导航")
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="作者")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="作者")
 
     class Meta:
         verbose_name = '分类'
@@ -24,22 +24,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
-    @classmethod
-    # 获取所有分类，并区分是否为导航
-    def get_navs(cls):
-        categories = cls.objects.filter(status=cls.STATUS_NORMAL)
-        nav_categories = []
-        normal_categories = []
-        for cate in categories:
-            if cate.is_nav:
-                nav_categories.append(cate)
-            else:
-                normal_categories.append(cate)
-        return {
-            'navs': nav_categories,
-            'categories': normal_categories,
-        }
 
 
 class Tag(models.Model):
@@ -54,7 +38,7 @@ class Tag(models.Model):
     status = models.PositiveIntegerField(default=STATUS_NORMAL,
         choices=STATUS_ITEMS, verbose_name="状态")
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="作者")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="作者")
 
     class Meta:
         verbose_name = '标签'
@@ -97,9 +81,9 @@ class Post(models.Model):
 
     @staticmethod
     # 通过 tag 获取文章
-    def get_by_tag(tag_pk):
+    def get_by_tag(tag_id):
         try:
-            tag = Tag.objects.get(pk=tag_pk)
+            tag = Tag.objects.get(id=tag_id)
         except Tag.DoesNotExist as e:
             tag = None
             post_list = []
@@ -110,9 +94,9 @@ class Post(models.Model):
 
     @staticmethod
     # 通过 category 获取文章
-    def get_by_category(category_pk):
+    def get_by_category(category_id):
         try:
-            category = Category.objects.get(pk=category_pk)
+            category = Category.objects.get(id=category_id)
         except Category.DoesNotExist as e:
             category = None
             post_list = []

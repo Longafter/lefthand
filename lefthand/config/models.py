@@ -54,7 +54,7 @@ class SideBar(models.Model):
     status = models.PositiveIntegerField(default=STATUS_SHOW,
         choices=STATUS_ITEMS, verbose_name="状态")
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="作者")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="作者")
 
     class Meta:
         verbose_name = "侧边栏"
@@ -62,11 +62,6 @@ class SideBar(models.Model):
 
     def __str__(self):
         return self.title
-
-    @classmethod
-    # 获取侧边栏
-    def get_all(cls):
-        return cls.objects.filter(status=cls.STATUS_SHOW)
 
     @property
     # 直接渲染模板
@@ -79,7 +74,7 @@ class SideBar(models.Model):
             result = self.content
         elif self.display_type == self.DISPLAY_LATEST:
             context = {
-                'posts': Post.lates_posts()
+                'posts': Post.latest_posts()
             }
             return render_to_string('config/blocks/sidebar_posts.html', context)
         elif self.display_type == self.DISPLAY_HOT:
