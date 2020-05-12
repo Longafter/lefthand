@@ -9,7 +9,7 @@
         <h1>{{ post.title }}</h1>
         <div class="card-body">
             <span class="card-link">作者：
-                <a href="#">{{ post.owner }}</a>
+                <a href="{% url 'blog:owner' post.owner.id %}">{{ post.owner }}</a>
             </span>
             <span class="card-link">分类：
                 <a href="{% url 'blog:post-category' post.category.id %}">{{ post.category }}</a>

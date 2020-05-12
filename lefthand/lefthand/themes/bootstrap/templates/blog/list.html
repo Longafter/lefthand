@@ -18,7 +18,7 @@
                     <a href="{% url 'blog:post-detail' post.id %}">{{ post.title }}</a>
                 </h5>
                 <span class="card-link">
-                    作者：<a href="#">{{ post.owner }}</a>
+                    作者：<a href="{% url 'blog:owner' post.owner.id %}">{{ post.owner }}</a>
                 </span>
                 <span class="card-link">
                     分类：<a href="{% url 'blog:post-category' post.category.id %}">{{ post.category }}</a>
@@ -30,7 +30,7 @@
                 </span>
                 <hr>
                 <p class="card-text">{{ post.desc }}
-                    <a href="{% url 'blog:post-detail' post.id %}">完整内容</a>
+                    <a href="{% url 'blog:post-detail' post.id %}">继续阅读</a>
                 </p>
             </div>
         </div>
