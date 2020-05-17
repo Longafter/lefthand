@@ -2,9 +2,11 @@
 
 {% block title %}
     {% if tag %}
-        标签-{{ tag.name }}
+        标签>{{ tag.name }}
     {% elif category %}
-        分类-{{ category.name }}
+        分类>{{ category.name }}
+    {% elif owner %}
+        作者>{{ owner }}
     {% else %}
         首页
     {% endif %}

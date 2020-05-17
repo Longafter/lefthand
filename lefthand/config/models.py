@@ -39,11 +39,13 @@ class SideBar(models.Model):
     DISPLAY_LATEST = 2
     DISPLAY_HOT = 3
     DISPLAY_COMMENT = 4
+    DISPLAY_TAG = 5
     SIDE_TYPE = (
         (DISPLAY_HTML, 'HTML'),
         (DISPLAY_LATEST, '最新文章'),
         (DISPLAY_HOT, '最热文章'),
         (DISPLAY_COMMENT, '最热评论'),
+        (DISPLAY_TAG, '标签'),
     )
 
     title = models.CharField(max_length=50, verbose_name="标题")
@@ -66,7 +68,7 @@ class SideBar(models.Model):
     @property
     # 直接渲染模板
     def content_html(self):
-        from blog.models import Post
+        from blog.models import Post, Tag
         from comment.models import Comment
 
         result = ''
@@ -82,9 +84,14 @@ class SideBar(models.Model):
                 'posts': Post.hot_posts()
             }
             return render_to_string('config/blocks/sidebar_posts.html', context)
-        elif self.display_type == self.DISPALY_COMMENT:
+        elif self.display_type == self.DISPLAY_COMMENT:
             context = {
                 'comments': Comment.objects.filter(status=Comment.STATUS_NORMAL)
             }
             return render_to_string('config/blocks/sidebar_comments.html', context)
+        elif self.display_type == self.DISPLAY_TAG:
+            context = {
+                'tags': Tag.all_tags()
+            }
+            return render_to_string('config/blocks/sidebar_tags.html', context)
     

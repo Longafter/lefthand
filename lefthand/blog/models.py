@@ -47,6 +47,12 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    # 获取所有标签
+    def all_tags(cls):
+        queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
+        return queryset
+
 
 class Post(models.Model):
     STATUS_NORMAL = 1
@@ -115,3 +121,4 @@ class Post(models.Model):
     # 获取最热文章
     def hot_posts(cls):
         queryset = cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+        return queryset

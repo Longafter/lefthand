@@ -1,11 +1,18 @@
+from datetime import date
+
+from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
-from django.db.models import Q
+from django.db.models import Q, F
 
+from django.contrib.auth.models import User
 from .models import Post, Category, Tag
 from config.models import SideBar
 
+
 class CommonViewMixin:
+    # 获取渲染到模板中的所有上下文，如果有新增数据
+    # 需要传递到模板中，可以重写该方法来完成
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
@@ -92,7 +99,16 @@ class SearchView(IndexView):
         return queryset.filter(Q(title__icontains=keyword) | Q(desc__icontains=keyword))
 
 
-class AuthorView(IndexView):
+class OwnerView(IndexView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        owner_id = self.kwargs.get('owner_id')
+        owner = get_object_or_404(User, id=owner_id)
+        context.update({
+            'owner': owner,
+        })
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
         owner_id = self.kwargs.get('owner_id')
@@ -104,3 +120,29 @@ class PostDetailView(CommonViewMixin, DetailView):
     context_object_name = 'post'
     template_name = 'blog/detail.html'
     pk_url_kwarg = 'post_id'
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        self.handle_visited()
+        return response
+
+    def handle_visited(self):
+        increase_pv = False
+        increase_uv = False
+        uid = self.request.uid
+        pv_key = 'pv:%s:%s' % (uid, self.request.path)
+        if not cache.get(pv_key):
+            increase_pv = True
+            cache.set(pv_key, 1, 1*60)  # 1分钟有效
+
+        uv_key = 'uv:%s:%s:%s' % (uid, str(date.today()), self.request.path)
+        if not cache.get(uv_key):
+            increase_uv = True
+            cache.set(uv_key, 1, 24*60*60)  # 24小时有效
+
+        if increase_pv and increase_uv:
+            Post.objects.filter(pk=self.object.id).update(pv=F('pv') + 1, uv=F('uv') + 1)
+        elif increase_pv:
+            Post.objects.filter(pk=self.object.id).update(pv=F('pv') + 1)
+        elif increase_uv:
+            Post.objects.filter(pk=self.object.id).update(uv=F('uv') + 1)
