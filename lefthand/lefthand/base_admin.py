@@ -1,6 +1,3 @@
-from django.contrib import admin
-
-
 class BaseOwnerAdmin(object):
     """
         1. 自动补充分类，标签，文章，侧边栏，友链这些Model的Owner字段

@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'crispy_forms',
+    'ckeditor',
+    'ckeditor_uploader',
     
     'xadmin',
 
@@ -120,3 +122,23 @@ STATUC_ROOT = '/tem/static'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'themes', THEME, 'static'),
 ]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+CKEDITOR_UPLOAD_PATH = 'article_images'
+
+
+XADMIN_TITLE = "左撇招牌字后台"
+XADMIN_FOOTER_TITLE = 'power by xadmin'
+
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 800,
+        'tabSpaces': 4,
+        'extraPlugins': 'codesnippet', # 配置代码插件
+    },
+}

@@ -15,11 +15,14 @@ Including another URLconf
 """
 import xadmin
 
+from django.conf import settings
 from django.urls import path, include
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', xadmin.site.urls, name='xadmin'),
     path('', include('blog.urls')),
     path('', include('config.urls')),
     path('', include('comment.urls')),
-]
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
