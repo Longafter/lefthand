@@ -19,10 +19,26 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 
+from rest_framework.routers import DefaultRouter
+from rest_framework.documentation import include_docs_urls
+
+from blog.apis import (
+        PostViewSet,
+        CategoryViewSet,
+        TagViewSet,
+    )
+
+router = DefaultRouter()
+router.register(r'post', PostViewSet, basename='api-post')
+router.register(r'category', CategoryViewSet, basename='api-category')
+router.register(r'tag', TagViewSet, basename='api-tag')
+
 urlpatterns = [
     path('admin/', xadmin.site.urls, name='xadmin'),
     path('', include('blog.urls')),
     path('', include('config.urls')),
     path('', include('comment.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('api/', include(router.urls)),
+    path('api/docs/', include_docs_urls(title='lefthand apis')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

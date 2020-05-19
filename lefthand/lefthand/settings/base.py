@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'ckeditor',
     'ckeditor_uploader',
+    'rest_framework',
     
     'xadmin',
 
@@ -141,4 +142,11 @@ CKEDITOR_CONFIGS = {
         'tabSpaces': 4,
         'extraPlugins': 'codesnippet', # 配置代码插件
     },
+}
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 4,
 }
